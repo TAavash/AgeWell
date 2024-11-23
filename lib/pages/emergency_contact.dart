@@ -1,25 +1,5 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const EmergencyContactApp());
-}
-
-class EmergencyContactApp extends StatelessWidget {
-  const EmergencyContactApp({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Emergency Contact App',
-      theme: ThemeData(
-        primarySwatch: Colors.green,
-        fontFamily: 'Roboto',
-      ),
-      home: const EmergencyContactScreen(),
-    );
-  }
-}
-
 class EmergencyContactScreen extends StatelessWidget {
   const EmergencyContactScreen({Key? key}) : super(key: key);
 

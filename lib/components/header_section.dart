@@ -11,7 +11,7 @@ class HeaderSection extends StatelessWidget {
       child: Row(
         children: [
           GestureDetector(
-            onTap: () => onMenuTap,
+            onTap: () => onMenuTap(),
             child: CircleAvatar(
               backgroundColor: Colors.grey[200],
               child: const Icon(Icons.menu, color: Colors.black54),

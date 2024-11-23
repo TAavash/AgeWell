@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:project/pages/emergency_contact.dart';
 import 'package:project/pages/user_profile.dart';
 import '../components/bottom_navbar.dart';
 import 'health_monitor.dart';
@@ -34,6 +36,20 @@ class _HomePageState extends State<HomePage> {
     _scaffoldKey.currentState?.openDrawer();
   }
 
+  // Logout function
+  Future<void> _logout() async {
+    try {
+      await FirebaseAuth.instance.signOut(); // Sign out the user
+      Navigator.of(context).pushReplacementNamed(
+          '/login'); // Navigate to login page (replace with your login screen route)
+    } catch (e) {
+      // Handle any errors (like network issues)
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // List of pages to navigate between
@@ -61,33 +77,46 @@ class _HomePageState extends State<HomePage> {
 
       // Drawer
       drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
+        child: Container(
+          color: Colors.deepPurple[200],
+          child: ListView(
+            children: [
+              DrawerHeader(
+                  child: Icon(
+                Icons.elderly,
+                size: 50,
+              )),
+              ListTile(
+                leading: Icon(Icons.phone),
+                title: Text("Emergency calls"),
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => EmergencyContactScreen()));
+                },
               ),
-              child: Text(
-                'Age Well',
-                style: TextStyle(color: Colors.white, fontSize: 24),
+              ListTile(
+                leading: Icon(Icons.phone),
+                title: Text("Emergency calls"),
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => EmergencyContactScreen()));
+                },
               ),
-            ),
-            ListTile(
-              title: const Text('Emergency Contacts'),
-              onTap: () {
-                // Handle item tap
-                //Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: const Text('Settings'),
-              onTap: () {
-                // Handle item tap
-                // Navigator.pop(context);
-              },
-            ),
-          ],
+              ListTile(
+                leading: Icon(Icons.phone),
+                title: Text("Emergency calls"),
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => EmergencyContactScreen()));
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.logout),
+                title: Text("Logout"),
+                onTap: _logout,
+              )
+            ],
+          ),
         ),
       ),
 

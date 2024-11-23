@@ -44,6 +44,7 @@ dependencies:
   intl: ^0.19.0
   flutter_localization: ^0.2.2
   google_nav_bar: ^5.0.7
+  smooth_page_indicator: ^1.2.0+3
 
 dev_dependencies:
   flutter_test:
