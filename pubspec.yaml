@@ -45,6 +45,8 @@ dependencies:
   flutter_localization: ^0.2.2
   google_nav_bar: ^5.0.7
   smooth_page_indicator: ^1.2.0+3
+  cloud_firestore: ^5.5.0
+  get: ^4.6.6
 
 dev_dependencies:
   flutter_test:

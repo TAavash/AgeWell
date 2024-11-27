@@ -1,8 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:project/pages/login_page.dart';
 import '../components/logo_box.dart';
 import '../components/my_button.dart';
 import '../components/my_textfield.dart';
+import '../models/user_model.dart';
+import '../services/user_service.dart';
 
 class RegisterPage extends StatefulWidget {
   final Function()? onTap;
@@ -20,9 +23,12 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   // text editing conntroller
+  final fullNameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+  final phoneNumberController = TextEditingController();
+  final addressController = TextEditingController();
 
   // sign user method
   void signUserUp() async {
@@ -52,15 +58,37 @@ class _RegisterPageState extends State<RegisterPage> {
       // Check if passwords match
       if (passwordController.text == confirmPasswordController.text) {
         // Create user with Firebase
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
-            email: emailController.text, password: passwordController.text);
+        UserCredential userCredential = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(
+                email: emailController.text, password: passwordController.text);
+
+        // After user is created, store additional data in Firestore
+        UserModel user = UserModel(
+          id: userCredential.user?.uid, // Get Firebase user ID
+          fullName: fullNameController.text,
+          email: emailController.text,
+          phoneNo: phoneNumberController.text,
+          address: addressController.text,
+        );
+
+        // Call the addUser method to save the user's details to Firestore
+        await UserService().addUser(user);
+
+        // Pop the loading dialog
+        Navigator.pop(context);
+
+        // Optionally navigate to a new screen or show a success message
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => LoginPage(
+                    onTap: widget
+                        .onTap))); // Example: Navigate to Home page after registration
       } else {
         Navigator.pop(context); // Remove loading indicator
         showErrorMessage("Passwords don't match");
         return;
       }
-      Navigator.pop(
-          context); // Remove loading indicator after successful registration
     } on FirebaseAuthException catch (e) {
       Navigator.pop(context); // Remove loading indicator
       // Handle specific Firebase error codes
@@ -131,6 +159,12 @@ class _RegisterPageState extends State<RegisterPage> {
                 height: 35,
               ),
 
+              //name textfield
+              MyTextfield(
+                  controller: fullNameController,
+                  hintText: "Full Name",
+                  obscureText: false),
+
               //email textfield
               MyTextfield(
                 controller: emailController,
@@ -140,6 +174,27 @@ class _RegisterPageState extends State<RegisterPage> {
               const SizedBox(
                 height: 35,
               ),
+
+              //phone number
+              MyTextfield(
+                controller: phoneNumberController,
+                hintText: 'Phone Number',
+                obscureText: false,
+              ),
+              const SizedBox(
+                height: 35,
+              ),
+
+              //address
+              MyTextfield(
+                controller: addressController,
+                hintText: 'Address',
+                obscureText: false,
+              ),
+              const SizedBox(
+                height: 35,
+              ),
+
               //password textfield
               MyTextfield(
                 controller: passwordController,

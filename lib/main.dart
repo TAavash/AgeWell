@@ -37,9 +37,9 @@ class MyApp extends StatelessWidget {
       //   const Locale('es', ''), // Spanish
       //   const Locale('ne', ''), // Nepali
       // ],
-      theme: ThemeData(
-        scaffoldBackgroundColor: Colors.grey[100],
-      ),
+      theme: ThemeData(brightness: Brightness.light),
+      darkTheme: ThemeData(brightness: Brightness.dark),
+      themeMode: ThemeMode.light,
       // routes: {
       //   '/checkHeartRate': (context) => CheckHeartBeatRate(),
       // },

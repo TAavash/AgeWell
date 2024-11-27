@@ -1,11 +1,32 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({Key? key}) : super(key: key);
 
+  Future<Map<String, dynamic>?> fetchUserDetails() async {
+    try {
+      // Get current user's UID
+      String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
+      if (uid.isEmpty) return null;
+
+      // Fetch user document from Firestore
+      DocumentSnapshot userDoc =
+          await FirebaseFirestore.instance.collection('USERS').doc(uid).get();
+
+      if (userDoc.exists) {
+        return userDoc.data() as Map<String, dynamic>;
+      }
+    } catch (e) {
+      debugPrint("Error fetching user details: $e");
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size; // Compute size dynamically here
+    final size = MediaQuery.of(context).size;
 
     return Scaffold(
       appBar: AppBar(
@@ -21,27 +42,39 @@ class ProfilePage extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Center(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildProfileSection(size),
-                const SizedBox(height: 40),
-                _buildAppointmentsSection(),
-                const SizedBox(height: 40),
-                _buildRecordsSection(),
-              ],
+      body: FutureBuilder<Map<String, dynamic>?>(
+        future: fetchUserDetails(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError || snapshot.data == null) {
+            return const Center(child: Text("Failed to load user details."));
+          }
+
+          final userData = snapshot.data!;
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildProfileSection(size, userData),
+                    const SizedBox(height: 40),
+                    _buildAppointmentsSection(),
+                    const SizedBox(height: 40),
+                    _buildRecordsSection(),
+                  ],
+                ),
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
 
-  Widget _buildProfileSection(Size size) {
+  Widget _buildProfileSection(Size size, Map<String, dynamic> userData) {
     return Container(
       width: size.width / 0.5,
       height: 400,
@@ -61,35 +94,37 @@ class ProfilePage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Center(
+          Center(
             child: CircleAvatar(
               radius: 70,
-              backgroundImage:
-                  NetworkImage('https://placeholder.svg?height=100&width=100'),
+              backgroundImage: NetworkImage(userData['profileImageUrl'] ??
+                  'https://placeholder.svg?height=100&width=100'),
             ),
           ),
           const SizedBox(height: 20),
           const Text("Full Name"),
-          const Text(
-            'Sithum Suraweera',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          Text(
+            userData['fullName'] ?? 'N/A',
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 10),
           const Text("Email Address"),
-          const Text(
-            'sithumsuraweera01@gmail.com',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          Text(
+            userData['email'] ?? 'N/A',
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 5),
           const Text("Phone Number"),
-          const Text(
-            '071 263 9494',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          Text(
+            userData['phoneNo'] ?? 'N/A',
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 10),
           Center(
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                // Navigate to an Edit Details page or implement editing logic
+              },
               child: const Text('Edit Details'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
@@ -140,12 +175,11 @@ class ProfilePage extends StatelessWidget {
 
   Widget _buildAppointmentTile(String doctor, String date, String time) {
     return Container(
-      margin:
-          const EdgeInsets.symmetric(vertical: 10), // Space around each tile
-      padding: const EdgeInsets.all(12), // Inner padding for the content
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16), // Rounded corners
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.blue, width: 1),
         boxShadow: [
           BoxShadow(
@@ -155,7 +189,7 @@ class ProfilePage extends StatelessWidget {
             offset: const Offset(0, 2),
           ),
         ],
-      ), // Border styling
+      ),
       child: ListTile(
         contentPadding: EdgeInsets.zero,
         leading: const Icon(Icons.person, color: Colors.blue),

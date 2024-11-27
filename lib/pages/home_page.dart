@@ -95,21 +95,21 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
               ListTile(
-                leading: Icon(Icons.phone),
-                title: Text("Emergency calls"),
+                leading: Icon(Icons.person),
+                title: Text("Profile"),
                 onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => EmergencyContactScreen()));
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => ProfilePage()));
                 },
               ),
               ListTile(
-                leading: Icon(Icons.phone),
-                title: Text("Emergency calls"),
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => EmergencyContactScreen()));
-                },
-              ),
+                  leading: Icon(Icons.settings),
+                  title: Text("Settings"),
+                  onTap: () {}
+                  // Navigator.of(context).push(MaterialPageRoute(
+                  //builder: (context) => EmergencyContactScreen()));
+                  //  },
+                  ),
               ListTile(
                 leading: Icon(Icons.logout),
                 title: Text("Logout"),
